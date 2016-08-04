@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DataLayer;
 
 namespace ConsoleView
@@ -8,6 +9,10 @@ namespace ConsoleView
         static void Main(string[] arguments)
         {
             var dataManager = new FullDataManager();
+
+            ComputerSummary computerSummary = dataManager.GetComputerSummary();
+            List<string> appList = dataManager.GetApplicationList();
+            List<string> hardwareList = dataManager.GetHardwareList();
 
             var computername = dataManager.GetMetric("computername");
             Console.WriteLine($"Computer Name: {computername}");
