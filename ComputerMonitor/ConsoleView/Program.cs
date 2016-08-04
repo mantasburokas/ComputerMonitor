@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Management;
 using DataLayer;
 
-namespace ConsoleApplication1
+namespace ConsoleView
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main(string[] arguments)
         {
             var dataManager = new FullDataManager();
 

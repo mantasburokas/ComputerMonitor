@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 namespace DataLayer
 {
@@ -19,7 +14,5 @@ namespace DataLayer
         public int RamUsage { get; set; }
         public int AvailableDiskSpaceGb { get; set; }
         public int AverageDiskQueueLength { get; set; }
-
-
     }
 }
