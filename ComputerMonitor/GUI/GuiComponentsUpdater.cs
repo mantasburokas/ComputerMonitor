@@ -40,7 +40,7 @@ namespace GUI
         {
             if (label.InvokeRequired)
             {
-                startingWindow.Invoke(new SetLabelTextCallback(SetText), text, label);
+                startingWindow.BeginInvoke(new SetLabelTextCallback(SetText), text, label);
             }
             else
             {
@@ -57,7 +57,7 @@ namespace GUI
         {
             if (e.Chart.InvokeRequired)
             {
-                startingWindow.Invoke(new UpdateChartCallback(UpdateChart), e);
+                startingWindow.BeginInvoke(new UpdateChartCallback(UpdateChart), e);
             }
             else
             {

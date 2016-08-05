@@ -118,10 +118,10 @@ namespace GUI
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            exit = true;
-            componentsUpdater.Join();
-
             base.OnFormClosing(e);
+
+            exit = true;
+            componentsUpdater?.Join();
         }
     }
 }
