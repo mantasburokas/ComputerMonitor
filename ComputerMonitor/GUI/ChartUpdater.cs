@@ -26,29 +26,21 @@ namespace GUI
 
         private void UpdateChart(ChartUpdateData e)
         {
-            try
+            if (e.Chart.InvokeRequired)
             {
-                if (e.Chart.InvokeRequired)
-                {
-                    startingWindow.Invoke(new UpdateChartCallback(UpdateChart), e);
-                }
-                else
-                {
-                    Series series = e.Chart.Series.FindByName(e.SeriesName);
-                    series.Points.AddXY(e.Time, new FullDataManager().GetMetric(e.ComputerProperty.ToString()));
-
-                    if (series.Points.Count > 5)
-                    {
-                        series.Points.RemoveAt(0);
-                    }
-
-                    e.Chart.Invalidate();
-                }
+                startingWindow.Invoke(new UpdateChartCallback(UpdateChart), e);
             }
-            catch (NullReferenceException ex)
+            else
             {
-                Console.Write(ex.Message);
-                //Environment.Exit(100);
+                Series series = e.Chart.Series.FindByName(e.SeriesName);
+                series.Points.AddXY(e.Time, new FullDataManager().GetMetric(e.ComputerProperty.ToString()));
+
+                if (series.Points.Count > 5)
+                {
+                    series.Points.RemoveAt(0);
+                }
+
+                e.Chart.Invalidate();
             }
         }
     }
