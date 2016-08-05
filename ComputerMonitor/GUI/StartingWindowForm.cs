@@ -15,7 +15,11 @@ namespace GUI
         private const string FreeDiskSpaceSeriesName = "Free Disk Space";
         private const string AvgDiskQueueLengthSeriesName = "Avg. Disk Queue Length";
 
+        private bool exit;
+
         private readonly DataManager dataManager = new FullDataManager();
+
+        private Thread chartUpdaterThread;
 
         delegate void SetLabelTextCallback(string value, Label label);
 
@@ -63,7 +67,7 @@ namespace GUI
             PopulateCharts();
 
             ComputerSummary computerSummary;
-            new Thread(o =>
+            chartUpdaterThread = new Thread(o =>
             {
                 computerSummary = dataManager.GetComputerSummary();
 
@@ -73,15 +77,19 @@ namespace GUI
                 SetText(computerSummary.Ram + " GB", ramCapacityValueLabel);
                 SetText(computerSummary.VideoCard, vgaNameValueLabel);
                 SetText(computerSummary.Ip.ToString(), ipAddressValueLabel);
-            }).Start();
+            });
+
+            chartUpdaterThread.Start();
         }
 
         private void PopulateCharts()
         {
             new Thread(() =>
             {
-                while (true)
+                while (!exit)
                 {
+                    Console.WriteLine("working");
+
                     string time = DateTime.Now.ToString("HH:mm:ss");
 
                     FireUpdateChartEvents(cpuRamUsageChart, CpuUsageSeriesName, ComputerProperties.CpuUsage, time);
@@ -119,6 +127,12 @@ namespace GUI
             {
                 label.Text = text;
             }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            exit = true;
+            base.OnFormClosing(e);
         }
     }
 }

@@ -48,7 +48,7 @@ namespace GUI
             catch (NullReferenceException ex)
             {
                 Console.Write(ex.Message);
-                Environment.Exit(100);
+                //Environment.Exit(100);
             }
         }
     }
