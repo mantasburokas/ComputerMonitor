@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using DataLayer;
@@ -16,20 +15,17 @@ namespace GUI
         private const string AvgDiskQueueLengthSeriesName = "Avg. Disk Queue Length";
 
         private bool exit;
+        private Thread componentsUpdater;
 
-        private readonly DataManager dataManager = new FullDataManager();
-
-        private Thread chartUpdaterThread;
-
-        delegate void SetLabelTextCallback(string value, Label label);
-
-        public event EventHandler<ChartUpdateData> UpdateChartsEvent;
+        public event EventHandler<ComputerSummaryLabelData> ComputerMonitoringBegan;
+        public event EventHandler<ChartUpdateData> TimeToRefreshChartDataPassed;
 
         public StartingWindowForm()
         {
             InitializeComponent();
             ConfigureCharts();
-            new ChartUpdater(this);
+
+            new GuiComponentsUpdater(this);
         }
 
         private void ConfigureCharts()
@@ -61,50 +57,53 @@ namespace GUI
             chart.Invalidate();
         }
 
-        private void showComputerSummaryButton_Click(object sender, EventArgs e)
+        private void BeginComputerMonitoringButton_Click(object sender, EventArgs e)
         {
-            showComputerSummaryButton.Enabled = false;
-            PopulateCharts();
+            beginComputerMonitoringButton.Enabled = false;
 
-            ComputerSummary computerSummary;
-            chartUpdaterThread = new Thread(o =>
+            componentsUpdater = new Thread(o =>
             {
-                computerSummary = dataManager.GetComputerSummary();
+                FireSetComputerSummaryLabelsEvent(computerNameValueLabel, ComputerProperties.ComputerName);
+                FireSetComputerSummaryLabelsEvent(usernameValueLabel, ComputerProperties.UserName);
+                FireSetComputerSummaryLabelsEvent(cpuNameValueLabel, ComputerProperties.CpuName);
+                FireSetComputerSummaryLabelsEvent(ramCapacityValueLabel, ComputerProperties.RamCapacity);
+                FireSetComputerSummaryLabelsEvent(vgaNameValueLabel, ComputerProperties.VgaName);
+                FireSetComputerSummaryLabelsEvent(ipAddressValueLabel, ComputerProperties.Ip);
 
-                SetText(computerSummary.Name, computerNameValueLabel);
-                SetText(computerSummary.User, usernameValueLabel);
-                SetText(computerSummary.Cpu, cpuNameValueLabel);
-                SetText(computerSummary.Ram + " GB", ramCapacityValueLabel);
-                SetText(computerSummary.VideoCard, vgaNameValueLabel);
-                SetText(computerSummary.Ip.ToString(), ipAddressValueLabel);
+                while (!exit)
+                {
+                    PopulateCharts();
+                    Thread.Sleep(1000);
+                }
             });
 
-            chartUpdaterThread.Start();
+            componentsUpdater.Start();
+        }
+
+        private void FireSetComputerSummaryLabelsEvent(Label label, ComputerProperties computerProperty)
+        {
+            ComputerSummaryLabelData labelData = new ComputerSummaryLabelData()
+            {
+                Label = label,
+                ComputerProperty = computerProperty
+            };
+
+            ComputerMonitoringBegan(this, labelData);
         }
 
         private void PopulateCharts()
         {
-            new Thread(() =>
-            {
-                while (!exit)
-                {
-                    Console.WriteLine("working");
+            string time = DateTime.Now.ToString("HH:mm:ss");
 
-                    string time = DateTime.Now.ToString("HH:mm:ss");
-
-                    FireUpdateChartEvents(cpuRamUsageChart, CpuUsageSeriesName, ComputerProperties.CpuUsage, time);
-                    FireUpdateChartEvents(cpuRamUsageChart, RamUsageSeriesName, ComputerProperties.RamUsage, time);
-                    FireUpdateChartEvents(freeDiskSpaceChart, FreeDiskSpaceSeriesName, 
-                        ComputerProperties.AvailableDiskSpace, time);
-                    FireUpdateChartEvents(avgDiskQueueLengthChart, AvgDiskQueueLengthSeriesName, 
-                        ComputerProperties.AverageDiskQueueLength, time);
-
-                    Thread.Sleep(1000);
-                }
-            }).Start();
+            FireUpdateChartEvent(cpuRamUsageChart, CpuUsageSeriesName, ComputerProperties.CpuUsage, time);
+            FireUpdateChartEvent(cpuRamUsageChart, RamUsageSeriesName, ComputerProperties.RamUsage, time);
+            FireUpdateChartEvent(freeDiskSpaceChart, FreeDiskSpaceSeriesName,
+                ComputerProperties.AvailableDiskSpace, time);
+            FireUpdateChartEvent(avgDiskQueueLengthChart, AvgDiskQueueLengthSeriesName,
+                ComputerProperties.AverageDiskQueueLength, time);
         }
 
-        private void FireUpdateChartEvents(Chart chart, string seriesName, ComputerProperties computerProperty, string time)
+        private void FireUpdateChartEvent(Chart chart, string seriesName, ComputerProperties computerProperty, string time)
         {
             ChartUpdateData usageData = new ChartUpdateData()
             {
@@ -114,24 +113,14 @@ namespace GUI
                 Time = time
             };
 
-            UpdateChartsEvent(this, usageData);
-        }
-
-        private void SetText(string text, Label label)
-        {
-            if (label.InvokeRequired)
-            {
-                Invoke(new SetLabelTextCallback(SetText), text, label);
-            }
-            else
-            {
-                label.Text = text;
-            }
+            TimeToRefreshChartDataPassed(this, usageData);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             exit = true;
+            componentsUpdater.Join();
+
             base.OnFormClosing(e);
         }
     }

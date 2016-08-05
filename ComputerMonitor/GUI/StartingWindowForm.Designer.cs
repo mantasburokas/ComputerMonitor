@@ -42,7 +42,7 @@ namespace GUI
             System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.titleLabel = new System.Windows.Forms.Label();
-            this.showComputerSummaryButton = new System.Windows.Forms.Button();
+            this.beginComputerMonitoringButton = new System.Windows.Forms.Button();
             this.computerNameLabel = new System.Windows.Forms.Label();
             this.usernameLabel = new System.Windows.Forms.Label();
             this.cpuNameLabel = new System.Windows.Forms.Label();
@@ -77,16 +77,16 @@ namespace GUI
             this.titleLabel.TabIndex = 0;
             this.titleLabel.Text = "Ultimate Computer Information Tool";
             // 
-            // showComputerSummaryButton
+            // beginComputerMonitoringButton
             // 
-            this.showComputerSummaryButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.showComputerSummaryButton.Location = new System.Drawing.Point(100, 125);
-            this.showComputerSummaryButton.Name = "showComputerSummaryButton";
-            this.showComputerSummaryButton.Size = new System.Drawing.Size(500, 30);
-            this.showComputerSummaryButton.TabIndex = 1;
-            this.showComputerSummaryButton.Text = "Begin Computer Monitoring";
-            this.showComputerSummaryButton.UseVisualStyleBackColor = true;
-            this.showComputerSummaryButton.Click += new System.EventHandler(this.showComputerSummaryButton_Click);
+            this.beginComputerMonitoringButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.beginComputerMonitoringButton.Location = new System.Drawing.Point(100, 125);
+            this.beginComputerMonitoringButton.Name = "beginComputerMonitoringButton";
+            this.beginComputerMonitoringButton.Size = new System.Drawing.Size(500, 30);
+            this.beginComputerMonitoringButton.TabIndex = 1;
+            this.beginComputerMonitoringButton.Text = "Begin Computer Monitoring";
+            this.beginComputerMonitoringButton.UseVisualStyleBackColor = true;
+            this.beginComputerMonitoringButton.Click += new System.EventHandler(this.BeginComputerMonitoringButton_Click);
             // 
             // computerNameLabel
             // 
@@ -124,9 +124,9 @@ namespace GUI
             this.ramCapacityLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.ramCapacityLabel.Location = new System.Drawing.Point(96, 341);
             this.ramCapacityLabel.Name = "ramCapacityLabel";
-            this.ramCapacityLabel.Size = new System.Drawing.Size(111, 20);
+            this.ramCapacityLabel.Size = new System.Drawing.Size(87, 20);
             this.ramCapacityLabel.TabIndex = 5;
-            this.ramCapacityLabel.Text = "RAM capacity:";
+            this.ramCapacityLabel.Text = "RAM (GB):";
             // 
             // vgaNameLabel
             // 
@@ -303,7 +303,7 @@ namespace GUI
             this.Controls.Add(this.cpuNameLabel);
             this.Controls.Add(this.usernameLabel);
             this.Controls.Add(this.computerNameLabel);
-            this.Controls.Add(this.showComputerSummaryButton);
+            this.Controls.Add(this.beginComputerMonitoringButton);
             this.Controls.Add(this.titleLabel);
             this.Name = "StartingWindowForm";
             this.Text = "Ultimate Computer Information Tool";
@@ -318,7 +318,7 @@ namespace GUI
         #endregion
 
         private Label titleLabel;
-        private Button showComputerSummaryButton;
+        private Button beginComputerMonitoringButton;
         private Label computerNameLabel;
         private Label usernameLabel;
         private Label cpuNameLabel;
